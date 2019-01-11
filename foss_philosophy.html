@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>OSAC - Open Source Ascol Circle</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link href='http://fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Black+Ops+One' rel='stylesheet' type='text/css'>
+<script type="text/javascript">
+      
+/***********************************************
+* Ultimate Fade-In Slideshow (v1.51): ?Dynamic Drive (http://www.dynamicdrive.com)
+* This notice MUST stay intact for legal use
+* Visit http://www.dynamicdrive.com/ for this script and 100s more.
+***********************************************/
+ 
+var fadeimages=new Array()
+//SET IMAGE PATHS. Extend or contract array as needed
+
+fadeimages[0]=["images/banner0.jpg", "", ""] //plain image syntax
+fadeimages[1]=["images/banner1.jpg", "", ""] //plain image syntax
+fadeimages[2]=["images/banner2.jpg", "", ""] //plain image syntax
+var fadebgcolor="white"
+
+////NO need to edit beyond here/////////////
+ 
+var fadearray=new Array() //array to cache fadeshow instances
+var fadeclear=new Array() //array to cache corresponding clearinterval pointers
+ 
+var dom=(document.getElementById) //modern dom browsers
+var iebrowser=document.all
+ 
+function fadeshow(theimages, fadewidth, fadeheight, borderwidth, delay, pause, displayorder){
+this.pausecheck=pause
+this.mouseovercheck=0
+this.delay=delay
+this.degree=10 //initial opacity degree (10%)
+this.curimageindex=0
+this.nextimageindex=1
+fadearray[fadearray.length]=this
+this.slideshowid=fadearray.length-1
+this.canvasbase="canvas"+this.slideshowid
+this.curcanvas=this.canvasbase+"_0"
+if (typeof displayorder!="undefined")
+theimages.sort(function() {return 0.5 - Math.random();}) //thanks to Mike (aka Mwinter) :)
+this.theimages=theimages
+this.imageborder=parseInt(borderwidth)
+this.postimages=new Array() //preload images
+for (p=0;p<theimages.length;p++){
+this.postimages[p]=new Image()
+this.postimages[p].src=theimages[p][0]
+}
+ 
+var fadewidth=fadewidth+this.imageborder*2
+var fadeheight=fadeheight+this.imageborder*2
+ 
+if (iebrowser&&dom||dom) //if IE5+ or modern browsers (ie: Firefox)
+document.write('<div id="master'+this.slideshowid+'" style="position:relative;width:'+fadewidth+'px;height:'+fadeheight+'px;overflow:hidden;"><div id="'+this.canvasbase+'_0" style="position:absolute;width:'+fadewidth+'px;height:'+fadeheight+'px;top:0;left:0;filter:progid:DXImageTransform.Microsoft.alpha(opacity=10);opacity:0.1;-moz-opacity:0.1;-khtml-opacity:0.1;background-color:'+fadebgcolor+'"></div><div id="'+this.canvasbase+'_1" style="position:absolute;width:'+fadewidth+'px;height:'+fadeheight+'px;top:0;left:0;filter:progid:DXImageTransform.Microsoft.alpha(opacity=10);opacity:0.1;-moz-opacity:0.1;-khtml-opacity:0.1;background-color:'+fadebgcolor+'"></div></div>')
+else
+document.write('<div><img name="defaultslide'+this.slideshowid+'" src="'+this.postimages[0].src+'"></div>')
+ 
+if (iebrowser&&dom||dom) //if IE5+ or modern browsers such as Firefox
+this.startit()
+else{
+this.curimageindex++
+setInterval("fadearray["+this.slideshowid+"].rotateimage()", this.delay)
+}
+}
+
+function fadepic(obj){
+if (obj.degree<100){
+obj.degree+=10
+if (obj.tempobj.filters&&obj.tempobj.filters[0]){
+if (typeof obj.tempobj.filters[0].opacity=="number") //if IE6+
+obj.tempobj.filters[0].opacity=obj.degree
+else //else if IE5.5-
+obj.tempobj.style.filter="alpha(opacity="+obj.degree+")"
+}
+else if (obj.tempobj.style.MozOpacity)
+obj.tempobj.style.MozOpacity=obj.degree/101
+else if (obj.tempobj.style.KhtmlOpacity)
+obj.tempobj.style.KhtmlOpacity=obj.degree/100
+else if (obj.tempobj.style.opacity&&!obj.tempobj.filters)
+obj.tempobj.style.opacity=obj.degree/101
+}
+else{
+clearInterval(fadeclear[obj.slideshowid])
+obj.nextcanvas=(obj.curcanvas==obj.canvasbase+"_0")? obj.canvasbase+"_0" : obj.canvasbase+"_1"
+obj.tempobj=iebrowser? iebrowser[obj.nextcanvas] : document.getElementById(obj.nextcanvas)
+obj.populateslide(obj.tempobj, obj.nextimageindex)
+obj.nextimageindex=(obj.nextimageindex<obj.postimages.length-1)? obj.nextimageindex+1 : 0
+setTimeout("fadearray["+obj.slideshowid+"].rotateimage()", obj.delay)
+
+
+}
+}
+
+ 
+fadeshow.prototype.populateslide=function(picobj, picindex){
+var slideHTML=""
+if (this.theimages[picindex][1]!="") //if associated link exists for image
+slideHTML='<a href="'+this.theimages[picindex][1]+'" target="'+this.theimages[picindex][2]+'">'
+slideHTML+='<img src="'+this.postimages[picindex].src+'" border="'+this.imageborder+'px">'
+if (this.theimages[picindex][1]!="") //if associated link exists for image
+slideHTML+='</a>'
+picobj.innerHTML=slideHTML
+}
+ 
+ 
+fadeshow.prototype.rotateimage=function(){
+if (this.pausecheck==1) //if pause onMouseover enabled, cache object
+var cacheobj=this
+if (this.mouseovercheck==1)
+setTimeout(function(){cacheobj.rotateimage()}, 100)
+else if (iebrowser&&dom||dom){
+this.resetit()
+var crossobj=this.tempobj=iebrowser? iebrowser[this.curcanvas] : document.getElementById(this.curcanvas)
+crossobj.style.zIndex++
+fadeclear[this.slideshowid]=setInterval("fadepic(fadearray["+this.slideshowid+"])",50)
+this.curcanvas=(this.curcanvas==this.canvasbase+"_0")? this.canvasbase+"_1" : this.canvasbase+"_0"
+}
+else{
+var ns4imgobj=document.images['defaultslide'+this.slideshowid]
+ns4imgobj.src=this.postimages[this.curimageindex].src
+}
+this.curimageindex=(this.curimageindex<this.postimages.length-1)? this.curimageindex+1 : 0
+}
+ 
+fadeshow.prototype.resetit=function(){
+this.degree=10
+var crossobj=iebrowser? iebrowser[this.curcanvas] : document.getElementById(this.curcanvas)
+if (crossobj.filters&&crossobj.filters[0]){
+if (typeof crossobj.filters[0].opacity=="number") //if IE6+
+crossobj.filters(0).opacity=this.degree
+else //else if IE5.5-
+crossobj.style.filter="alpha(opacity="+this.degree+")"
+}
+else if (crossobj.style.MozOpacity)
+crossobj.style.MozOpacity=this.degree/101
+else if (crossobj.style.KhtmlOpacity)
+crossobj.style.KhtmlOpacity=this.degree/100
+else if (crossobj.style.opacity&&!crossobj.filters)
+crossobj.style.opacity=this.degree/101
+}
+ 
+ 
+fadeshow.prototype.startit=function(){
+var crossobj=iebrowser? iebrowser[this.curcanvas] : document.getElementById(this.curcanvas)
+this.populateslide(crossobj, this.curimageindex)
+if (this.pausecheck==1){ //IF SLIDESHOW SHOULD PAUSE ONMOUSEOVER
+var cacheobj=this
+var crossobjcontainer=iebrowser? iebrowser["master"+this.slideshowid] : document.getElementById("master"+this.slideshowid)
+crossobjcontainer.onmouseover=function(){cacheobj.mouseovercheck=1}
+crossobjcontainer.onmouseout=function(){cacheobj.mouseovercheck=0}
+}
+this.rotateimage()
+}
+
+</script>
+<!--------------------------------------------- End of slide show code --------------------------------->
+
+<!-- for login form -->
+
+<link rel="stylesheet" href="colorbox.css" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+		<script src="colorbox/jquery.colorbox.js"></script>
+		<script>
+			$(document).ready(function(){
+				//Examples of how to assign the ColorBox event to elements
+				$(".group1").colorbox({rel:'group1'});
+				$(".group2").colorbox({rel:'group2', transition:"fade"});
+				$(".group3").colorbox({rel:'group3', transition:"none", width:"75%", height:"75%"});
+				$(".group4").colorbox({rel:'group4', slideshow:true});
+				$(".ajax").colorbox();
+				$(".youtube").colorbox({iframe:true, innerWidth:425, innerHeight:344});
+				$(".iframe").colorbox({iframe:true, width:"80%", height:"80%"});
+				$(".inline").colorbox({inline:true, width:"50%"});
+				$(".callbacks").colorbox({
+					onOpen:function(){ alert('onOpen: colorbox is about to open'); },
+					onLoad:function(){ alert('onLoad: colorbox has started to load the targeted content'); },
+					onComplete:function(){ alert('onComplete: colorbox has displayed the loaded content'); },
+					onCleanup:function(){ alert('onCleanup: colorbox has begun the close process'); },
+					onClosed:function(){ alert('onClosed: colorbox has completely closed'); }
+				});
+				
+				//Example of preserving a JavaScript event for inline calls.
+				$("#click").click(function(){ 
+					$('#click').css({"background-color":"#f00", "color":"#fff", "cursor":"inherit"}).text("Open this window again and this message will still be here.");
+					return false;
+				});
+			});
+		</script>
+</head>
+<body>
+<!----------------------------------------------Sticky Header-------------------------------------------->
+<div id="stickyheader">
+  <div id="stickyheaderwrapper">
+    <div id="headertext"></div>
+    <div class="menu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about_us.html">About</a></li>
+        <li><a href="http://osacascol.blogspot.com/" target="_blank">Blog</a></li>
+        <li><a href="gallery.html">Gallery</a></li>
+        <li><a href="contact_us.html">Contact</a></li>
+       
+      </ul>
+    </div>
+    <div class="clear"></div>
+  </div>
+</div>
+<!----------------------------------------------Ends----------------------------------------------------->
+<!---------------------------Secondar header------------------->
+<div id="secondaryheader">
+  <div id="secondaryheaderwrapper"> 
+  <div id="slider">
+<script type="text/javascript">
+//new fadeshow(IMAGES_ARRAY_NAME, slideshow_width, slideshow_height, borderwidth, delay, pause (0=no, 1=yes), optionalRandomOrder)
+new fadeshow(fadeimages, 976, 170, 0, 5000, 3000)
+</script>
+</div>
+  
+  
+    
+   
+   <!--
+    <div id="writerdescription">
+      <h2>" About me......."</h2>
+      <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when ...
+        Lorem ipsum dolor sit amet</p>
+      <div class="more"><a href="#">read more</a></div>
+    </div>
+	-->
+    <div class="clear"></div>
+  </div>
+</div>
+<!------------------------------------Ends----------------------------------------------->
+<!--------------------------------------Main container----------------------------------------------->
+<div id="maincontainer">
+<!------------------------------------------Leftcontainer---------------------------------------->
+  <div id="containerleft">
+   <div class="contentwrapper">
+        
+       <div class="listwrapper" style="width:600px; padding:5px">
+       <ul>
+       <li><h2 class="heading">FOSS philosophy</h2></li>
+        <li><p align="justify">Starting in the early years of the 21'st century, significant amounts of investment capital have gone into open source companies like SpikeSource and SourceLabs. Red Hat bought JBOSS for hundreds of millions of dollars. Oracle bought InnoDB, the core of the open source database MySQL. XenSource made it clear they intend to profit from proprietary add-ons to their virtual operating system software. And in 2007, the president of the Open Source Initiative essentially acknowledged that the term “open source” by itself has been co-opted and is no longer meaningful. .</p></li>
+		
+		<li><p align="justify">Several business models have evolved around open source in just a few years, in what seems like a commercial mirror of the innovation that is a characteristic of the technology itself. The variety of these models significantly complicates the easy drawing of ethical dividing lines. As a baseline, there aren’t many open source purists who would deny others the right to make a living providing value-added open source support services.
+		</p></li>
+<li><p align="justify">
+For the most part, open source advocates have tolerated business oriented efforts believing that the larger pie made it an acceptable price to pay, especially if you believed that the long-term rightness of the cause would eventually prevail in any case, a view that encourages a laissez-faire attitude to this momentous clash of ideas in the marketplace. However, today in 2008, the angst is deeper and more widespread as large swaths of open source mind-share are taken up by commercial initiatives, and the joy of seeing the threat from lawsuits by SCO against Unix evaporate is tempered by apprehension about new partnerships between Microsoft and some Linux companies. If there is a valuable principle at stake here, if open source is a precious gift to the world and future generations, what can or should be done about these developments? </p></li>
+		
+		<li><p align="justify">First on the bright side, it is true that the tide is lifting all boats, and the strength, number, and membership of open source organizations has never been greater. Fortunately, many of the movement's visionaries remain with us to continue to guide the way, none more uncompromisingly than the progenitor Richard Stallman. And since belief in open source is essentially a libertarian philosophy, there is little appetite in the general community for legal barriers to curtail the rights of those that wish to see if they can offer value-add to open source and make a business. At the end of the day, open source continues to be one of the most wildly successful growth movements in human history. </p></li>
+		
+		<li><p align="justify">
+		The development of the Internet provides a helpful illustration of the benefit of commercial participation. While the network was primarily a resource for researchers through the 1980s, many of the network’s original pioneers, such as TCP/IP co-inventor Vinton Cerf, realized early the benefits and necessity of commercial involvement in order to sustain and grow the success. And although many of us bemoan the hype, advertisements, gambling sites, and related flotsam and jetsam left in the wake of business embrace of the Web, there is little doubt that the progress towards universal access at affordable prices resulting from business building the Internet to global scale is a profound good. </li></p>
+		
+	   
+        <div class="clear"></div>
+       </div>
+	   
+
+       <div class="clear"></div>  
+      </div>
+  
+      
+	   </div>
+
+  <!-------------------------------------------Left ends------------------------------------------->
+  
+  <div id="containerright">
+  <div class="rightcontent">
+  <h2 class="rightheading">Upcoming events</h2>
+  <ul>
+  <a class='ajax' href="register.php" title="** Thankyou for your participation  **"><img src="images/expo.jpg"></a>
+  </ul>
+ 
+  </div>
+  
+  <div class="rightcontent">
+  <h2 class="rightheading">Weekly Programmes By OSAC</h2>
+  <ul>
+    
+ <marquee behavior="scroll" scrolldelay="60" scrollamount="1" height="180px" width="315px" truespeed="truespeed" onMouseOver="this.stop();" onMouseOut="this.start();" direction="up">
+  <li><a href="http://osacascol.blogspot.com">Osac Tech Talk........</a></li>
+    <li><a href="http://osacascol.blogspot.com">File hide programme demo..........</a></li>
+  <li><a href="http://osacascol.blogspot.com">PHP introduction........... </a></li>
+  <li><a href="http://osacascol.blogspot.com">Basic terminal commands .........</a></li>
+    <li><a href="http://osacascol.blogspot.com">Android App development ........</a></li>
+    <li><a href="http://osacascol.blogspot.com">WEP hack using Backtrack..........</a></li>
+	</marquee>
+ </ul>
+  </div>
+  
+ 
+  
+  <!-----------------rightcontainerbox-------------------->
+  <div class="rightcontentbox" style="height:190px;">
+  
+  <h2 class="rightheading">Hightlights</h2>
+  <img src="images/obuntu.gif">
+  
+  <!--
+    <ul>
+  <li id="booklist"><img src="images/default.png" width="128" height="128" align="absmiddle" /></li>
+    <li id="booklist"><img src="images/default.png" width="128" height="128" align="absmiddle" /></li>
+  <li id="booklist"><img src="images/default.png" width="128" height="128" align="absmiddle" /></li>
+  <li id="booklist"><img src="images/default.png" width="128" height="128" align="absmiddle" /></li>
+    
+ </ul>
+ -->
+  </div>
+  <!------------------------------------Ends----------------->
+  
+  <!----------------------------rightcontainerbox2-------------------------->
+   <div class="rightcontentbox2"> 
+   <div class="quote">
+  <p><i>Most good programmers do programming not because they expect to get paid or get adulation by the public, but because it is fun to program.</i></p>
+  <br><font style="color:grey; family:tahoma;float:right;padding-bottom:12px;">Linus Torvaldas</font>
+  </div>
+  </div>
+  
+  <div class="rightcontentbox2"> 
+    <div id="socialplugintext">Find us on:</div>
+  <div id="socialpluginbox"><a href="https://www.facebook.com/groups/osacchat/" target="_blank"><img src="images/social_facebook_box_white.png" width="48" height="48" alt="find us on facebook" /></a></div>
+   <div id="socialpluginbox"><a href="http://osacascol.blogspot.com" target="_blank"><img src="images/social_twitter_box_white.png" width="48" height="48" alt="" /></a></div>
+   <div id="socialpluginbox"><a href="http://gmail.com" target="_blank"><img src="images/social_google_box_white.png" width="48" height="48" alt="" /></a></div>
+  <div class="clear"></div>
+  </div>
+  
+ 
+  <!--------------------------------Ends------------------------------------->
+  <div class="clear"></div>
+  </div>
+  <div class="clear"></div>
+  
+  <!-------------------------------------Horizontal bar---------------------->
+  <div id="hbar"></div>
+  <div class="clear"></div>
+  <!------------------------------------Ends-------------------------------->
+</div>
+<div class="clear"></div>
+<!---------------------------------------Ends---------------------------------------------------->
+
+<!-----------------------------------------------------Footer---------------------------->
+<div id="footer">
+<div id="footerwrapper">
+<h2 id="footerright">Copyright 2012 &copy; OSAC</h2>
+
+</div>
+</div>
+<!-----------------------------------------Ends------------------------------->
+</body>
+</html>
